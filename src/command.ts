@@ -23,7 +23,7 @@ const command = yargs
     .describe('T', 'specify type configs from file')
     .describe('p', 'output the time it took to run the data')
     .demandOption(['r', 'd'])
-    .version("0.1.0")
+    .version("0.2.0")
     .argv
 
 const filePath = command.rules;
