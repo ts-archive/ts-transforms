@@ -21,10 +21,9 @@ export default class PostProcessPhase implements PhaseBase {
         this.hasPostProcessing = Object.keys(this.postProcessPhase).length > 0;
     }
 
-    installOps({ type, filterFn }: { type: string, filterFn: Function}, configList:OperationConfig[]) {
+    installOps({ type, filterFn }: { type: string, filterFn: Function }, configList:OperationConfig[]) {
         const { postProcessPhase } = this;
         _.forEach(configList, (config: OperationConfig) => {          
-            // convert refs to selectors
             if (filterFn(config)) {
                 const configData = this.normalizeConfig(config, configList);
                 const opType = config[type];
@@ -62,7 +61,6 @@ export default class PostProcessPhase implements PhaseBase {
         // a validation/post-op source is the target_field of the previous op
         const formattedTargetConfig = {};
         if (targetConfig.target_field) formattedTargetConfig['source_field'] = targetConfig.target_field
-       // we need to take the new fields from the formatted config but keep the original selector
         const finalConfig = _.assign({}, config, formattedTargetConfig);
 
         return { configuration: finalConfig, registrationSelector };
@@ -79,7 +77,10 @@ export default class PostProcessPhase implements PhaseBase {
 
             _.forOwn(selectors, (_value, key) => {
                 if (postProcessPhase[key]) {
-                    results = postProcessPhase[key].reduce<DataEntity | null>((record, fn) => fn.run(record), results);
+                    results = postProcessPhase[key].reduce<DataEntity | null>((record, fn) => {
+                        if (!record) return record;
+                        return fn.run(record);
+                    }, results);
                 }
             });
 

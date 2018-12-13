@@ -51,7 +51,8 @@ export interface Refs {
 
 export interface StringRefs extends Refs {
     length?: number;
-    target_field: string;
+    target_field?: string;
+    source_field: string;
 }
 
 export interface ConfigResults {

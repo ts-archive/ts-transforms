@@ -8,12 +8,11 @@ export default class Transform extends OperationBase {
     private config: OperationConfig;
 
     constructor(config: OperationConfig) {
-        super()
+        super(config);
         this.config = config;
     }
 
-    run(doc: DataEntity | null): DataEntity | null {
-        if (!doc) return doc;
+    run(doc: DataEntity): DataEntity | null {
         const { config } = this;
         let data = doc[config.source_field as string];
 
