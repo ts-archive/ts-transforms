@@ -6,51 +6,34 @@ import _ from 'lodash';
 import * as Operations from '../operations'
 
 export default class PostProcessPhase implements PhaseBase {
-      //@ts-ignore
-    private opConfig: WatcherConfig;
     private postProcessPhase: OperationsDictionary;
     private hasPostProcessing: boolean;
 
-    constructor(opConfig: WatcherConfig, configList:OperationConfig[]) {
-        this.opConfig = opConfig;
-        const postProcessPhase: OperationsDictionary = {};
-        //TODO: look to refactor this
-        _.forEach(configList, (config: OperationConfig) => {
-            //post_process first
-            if (config.selector && config.post_process && !config.refs) {
-                const configData = this.normalizeConfig(config, configList);
-                const Op = Operations.opNames[config.post_process];
-                if (!Op) throw new Error(`could not find post_process module config: ${JSON.stringify(config)}`);
-                if (!postProcessPhase[configData.registrationSelector]) postProcessPhase[configData.registrationSelector] = [];
-                postProcessPhase[configData.registrationSelector].push(new Op(configData.configuration))
-            }
-        });
+    constructor(_opConfig: WatcherConfig, configList:OperationConfig[]) {
+        this.postProcessPhase = {};
+        const sequence = [
+            { type: 'post_process', filterFn: (config: OperationConfig) => config.selector && config.post_process && !config.refs },
+            { type: 'validation', filterFn: (config: OperationConfig) => config.selector && config.validation && !config.refs },
+            { type: 'post_process', filterFn: (config: OperationConfig) => config.refs && config.post_process },
+            { type: 'validation', filterFn: (config: OperationConfig) => config.refs && config.validation },
+        ];
+        sequence.forEach((loadingConfig) => this.installOps(loadingConfig, configList))
+        this.hasPostProcessing = Object.keys(this.postProcessPhase).length > 0;
+    }
 
-        _.forEach(configList, (config: OperationConfig) => {
-            // then do validations
-            if (config.selector && config.validation && !config.refs) {
-                const configData = this.normalizeConfig(config, configList);
-                const Op = Operations.opNames[config.validation];
-                if (!Op) throw new Error(`could not find validation module ${JSON.stringify(config)}`);
-                if (!postProcessPhase[configData.registrationSelector]) postProcessPhase[configData.registrationSelector] = [];
-                postProcessPhase[configData.registrationSelector].push(new Op(configData.configuration))
-            }
-        });
-
+    installOps({ type, filterFn }: { type: string, filterFn: Function}, configList:OperationConfig[]) {
+        const { postProcessPhase } = this;
         _.forEach(configList, (config: OperationConfig) => {          
             // convert refs to selectors
-            if (config.refs) {
+            if (filterFn(config)) {
                 const configData = this.normalizeConfig(config, configList);
-                const opType = config.validation || config.post_process;
+                const opType = config[type];
                 const Op = Operations.opNames[opType as string];
                 if (!Op) throw new Error(`could not find ${opType} module, config: ${JSON.stringify(config)}`);
                 if (!postProcessPhase[configData.registrationSelector]) postProcessPhase[configData.registrationSelector] = [];
                 postProcessPhase[configData.registrationSelector].push(new Op(configData.configuration));
             }
         });
-
-        this.postProcessPhase = postProcessPhase;
-        this.hasPostProcessing = Object.keys(postProcessPhase).length > 0;
     }
 
     normalizeConfig(config: OperationConfig, configList:OperationConfig[]): NormalizedConfig {
@@ -75,7 +58,6 @@ export default class PostProcessPhase implements PhaseBase {
         }
 
          const { registrationSelector, targetConfig } = findConfiguration(config, data);
-        // @ts-ignore
         if (!registrationSelector || !targetConfig) throw new Error('could not find orignal selector and target configuration');
         // a validation/post-op source is the target_field of the previous op
         const formattedTargetConfig = {};
@@ -110,4 +92,4 @@ export default class PostProcessPhase implements PhaseBase {
 
         return resultsList;
     }
-  }
+}
