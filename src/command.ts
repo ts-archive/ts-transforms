@@ -88,11 +88,7 @@ async function getData(dataPath: string) {
     return DataEntity.makeArray(parsedData);
 }
 
- //@ts-ignore
 const manager = new PhaseManager(opConfig, logger);
-function waitFor(time:number) {
-    return new Promise((resolve) => setTimeout(() => resolve(true), time))
-} 
 
 Promise.resolve(manager.init())
     .then(() => getData(path.resolve(dir, dataPath)))

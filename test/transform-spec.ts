@@ -15,6 +15,7 @@ describe('can transform matches', () => {
     const transformRules7Path = path.join(__dirname, './fixtures/transformRules7.txt');
     const transformRules8Path = path.join(__dirname, './fixtures/transformRules8.txt');
     const transformRules9Path = path.join(__dirname, './fixtures/transformRules9.txt');
+    const transformRules10Path = path.join(__dirname, './fixtures/transformRules10.txt');
 
     let opTest: TestHarness;
 
@@ -338,4 +339,24 @@ describe('can transform matches', () => {
             expect(DataEntity.isDataEntity(result)).toEqual(true);
         });
     });
+
+    it('can target multiple transforms on the same field', async () => {
+        const config: WatcherConfig = {
+            file_path: transformRules10Path,
+            type: 'transform'
+        };
+
+        const data = DataEntity.makeArray([
+            { "domain": "example.com", "url": "http://www.example.com/path?field1=blah&field2=moreblah&field3=evenmoreblah" },
+            { "domain": "other.com", "url": "http://www.example.com/path?field1=blah&field2=moreblah&field3=evenmoreblah" },
+            { "domain": "example.com", "url": "http://www.example.com/path?field5=blah&field6=moreblah&field7=evenmoreblah" }
+        ]);
+
+        const test = await opTest.init(config);
+        const results =  await test.run(data);
+
+        expect(results.length).toEqual(1);
+        expect(results[0]).toEqual({ field1: 'blah', field2: 'moreblah', field3: 'evenmoreblah' });
+        expect(DataEntity.isDataEntity(results[0])).toEqual(true);
+    })
 });
