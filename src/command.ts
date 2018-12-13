@@ -9,18 +9,19 @@ import { debugLogger, DataEntity } from '@terascope/job-components';
 
 const logger = debugLogger('ts-transform-cli');
 const dir = process.cwd();
-
 const command = yargs
     .alias('t', 'types-fields')
     .alias('T', 'types-file' )
     .alias('r', 'rules')
     .alias('d', 'data')
+    .alias('p', 'performance')
     .help('h')
     .alias('h', 'help')
     .describe('r', 'path to load the rules file')
     .describe('d', 'path to load  the data file')
     .describe('t', 'specify type configs ie field:value, otherfield:value')
     .describe('T', 'specify type configs from file')
+    .describe('p', 'output the time it took to run the data')
     .demandOption(['r', 'd'])
     .version("0.1.0")
     .argv
@@ -89,17 +90,21 @@ async function getData(dataPath: string) {
 
  //@ts-ignore
 const manager = new PhaseManager(opConfig, logger);
+function waitFor(time:number) {
+    return new Promise((resolve) => setTimeout(() => resolve(true), time))
+} 
 
 Promise.resolve(manager.init())
     .then(() => getData(path.resolve(dir, dataPath)))
     .then((data) => {
-        process.stderr.write('\n');
-        console.time('execution-time');
+        if (command.p) {
+            process.stderr.write('\n');
+            console.time('execution-time');
+        }
         const results = manager.run(data);
-        console.timeEnd('execution-time');
+        if (command.p) console.timeEnd('execution-time');
         process.stderr.write('\nresults:\n');
-        process.stdout.write(JSON.stringify(results, null, 4));
-        process.stderr.write('\n');
+        process.stdout.write(`${JSON.stringify(results, null, 4)} \n`);
     })
     .catch((err) => {
         console.error(err);
