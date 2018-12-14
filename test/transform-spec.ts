@@ -429,6 +429,7 @@ describe('can transform matches', () => {
             { hello: "world", data: 'someData', other: 'someData' },
             { hello: "world", data: 'otherData', other: 'otherData' }
         ];
+
         const test = await opTest.init(config);
         const results =  await test.run(data);
 
