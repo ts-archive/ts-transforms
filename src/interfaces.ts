@@ -17,6 +17,7 @@ export interface OperationConfig {
     post_process?: string;
     remove_source?: boolean;
     registration_selector?:string;
+    mutate?: boolean;
 }
 //TODO: fix registrationSelector above
 export interface Refs {

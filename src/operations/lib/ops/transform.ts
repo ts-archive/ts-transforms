@@ -6,9 +6,11 @@ import _ from 'lodash';
 
 export default class Transform extends OperationBase {
     private config: OperationConfig;
+    private isMutation: Boolean;
 
     constructor(config: OperationConfig) {
         super(config);
+        this.isMutation = config.mutate === true;
         this.config = config;
     }
 
@@ -25,11 +27,12 @@ export default class Transform extends OperationBase {
     }
 
     run(doc: DataEntity): DataEntity | null {
-        const { config } = this;
-        let data = doc[config.source_field as string];
+        const { config, isMutation, target, source } = this;
+        let data = doc[source];
         if (data) {
             const metaData = doc.getMetadata();
             let transformedResult;
+
             if (config.regex) {
                 const { regex } = config;
                 let extractedField;
@@ -69,9 +72,15 @@ export default class Transform extends OperationBase {
                 transformedResult = data;
             }
 
-            if (transformedResult) return new DataEntity(_.set({}, config.target_field as string, transformedResult), metaData);
+            if (transformedResult)  {
+                if (isMutation) {
+                    _.set(doc, target, transformedResult);
+                    return doc;
+                }
+                return new DataEntity(_.set({}, target, transformedResult), metaData);
+            }
         }
-
+        if (isMutation) return doc;
         return null;
     }
 }

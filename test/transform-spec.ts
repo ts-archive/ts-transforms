@@ -117,7 +117,7 @@ describe('can transform matches', () => {
 
         const data2 = DataEntity.makeArray([
                 { some: 'data', bytes: 1200 , myfield: 'http://google.com?field1=helloThere'},
-            ]);
+        ]);
 
         const test = await opTest.init(config);
         const results1 =  await test.run(data1);
@@ -411,5 +411,31 @@ describe('can transform matches', () => {
         expect(results2.length).toEqual(1);
         expect(results2[0]).toEqual({ field3: 'evenmoreblah' });
         expect(DataEntity.isDataEntity(results2[0])).toEqual(true);
+    });
+
+    it('it can mutate data in place for transforms', async () => {
+        const config: WatcherConfig = {
+            file_path: getPath("transformRules13.txt"),
+            type: 'transform'
+        };
+
+        const data = DataEntity.makeArray([
+           { hello: "world", data: 'someData' },
+           { hello: "world", data: 'otherData' },
+           {}
+        ]);
+
+        const resultSet =  [
+            { hello: "world", data: 'someData', other: 'someData' },
+            { hello: "world", data: 'otherData', other: 'otherData' }
+        ];
+        const test = await opTest.init(config);
+        const results =  await test.run(data);
+
+        expect(results.length).toEqual(2);
+        _.each(results, (data, index) => {
+            expect(DataEntity.isDataEntity(data)).toEqual(true);
+            expect(data).toEqual(resultSet[index]);
+        });
     });
 });
