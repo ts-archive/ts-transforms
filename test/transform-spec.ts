@@ -60,7 +60,7 @@ describe('can transform matches', () => {
         expect(results.length).toEqual(1);
         expect(results[0]).toEqual({ point: data[0].location });
     });
-
+    //TODO: make sure transforms happen on all selector paths
     it('it can transform matching data with no selector', async () => {
         const config: WatcherConfig = {
             file_path: getPath("transformRules3.txt"),
@@ -129,6 +129,29 @@ describe('can transform matches', () => {
 
         expect(results2.length).toEqual(1);
         expect(results2[0]).toEqual({ topfield: { value1: 'helloThere' } });
+    });
+
+    it('can extract using start/end on fields that are arrays', async () => {
+        const config: WatcherConfig = {
+            file_path: getPath("transformRules10.txt"),
+            type: 'transform'
+        };
+        const urls = [
+            "http://www.example.com/path?field1=blah",
+            "http://www.example.com/path?field2=moreblah",
+            "http://www.example.com/path?field3=evenmoreblah"
+        ];
+
+        const data = DataEntity.makeArray([
+            { "domain": "example.com", "url": urls },
+        ]);
+
+        const test = await opTest.init(config);
+        const results =  await test.run(data);
+
+        expect(results.length).toEqual(1);
+        expect(results[0]).toEqual({ field1: 'blah', field2: 'moreblah', field3: 'evenmoreblah' });
+        expect(DataEntity.isDataEntity(results[0])).toEqual(true);
     });
 
     it('can merge extacted results', async () => {
