@@ -99,7 +99,6 @@ Promise.resolve(manager.init())
         }
         const results = manager.run(data);
         if (command.p) console.timeEnd('execution-time');
-        process.stderr.write('\nresults:\n');
         process.stdout.write(`${JSON.stringify(results, null, 4)} \n`);
     })
     .catch((err) => {
