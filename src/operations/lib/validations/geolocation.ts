@@ -1,7 +1,7 @@
 
 import OperationBase from '../base';
 import { DataEntity } from '@terascope/job-components';
-import { OperationConfig } from '../../../interfaces'
+import { OperationConfig } from '../../../interfaces';
 import _ from 'lodash';
 
 export default class Geolocation extends OperationBase {
@@ -10,8 +10,7 @@ export default class Geolocation extends OperationBase {
     }
 
     run(doc: DataEntity): DataEntity | null {
-        const { source } = this;
-        const geoData = _.get(doc, source);
+        const geoData = _.get(doc, this.source);
         let hasError = true;
         if (!geoData) return doc;
 
@@ -31,7 +30,7 @@ export default class Geolocation extends OperationBase {
             if (!lon || (lon > 180 || lon < -180)) hasError = true;
         }
 
-        if (hasError) _.unset(doc, source);
+        if (hasError) _.unset(doc, this.source);
         return doc;
     }
 }

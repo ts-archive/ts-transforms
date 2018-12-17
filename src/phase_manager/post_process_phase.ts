@@ -3,7 +3,7 @@ import { DataEntity } from '@terascope/job-components';
 import { OperationConfig, WatcherConfig, OperationsDictionary, NormalizedConfig, ConfigResults } from '../interfaces';
 import PhaseBase from './base';
 import _ from 'lodash';
-import * as Operations from '../operations'
+import * as Operations from '../operations';
 
 export default class PostProcessPhase implements PhaseBase {
     private postProcessPhase: OperationsDictionary;
@@ -18,20 +18,20 @@ export default class PostProcessPhase implements PhaseBase {
             { type: 'validation', filterFn: (config: OperationConfig) => config.refs && config.validation },
         ];
         sequence.forEach((loadingConfig) => this.installOps(loadingConfig, configList));
-        this.transformRequirements(configList)
+        this.transformRequirements(configList);
         this.hasPostProcessing = Object.keys(this.postProcessPhase).length > 0;
     }
 
     installOps({ type, filterFn }: { type: string, filterFn: Function }, configList:OperationConfig[]) {
-        const { postProcessPhase } = this;
-        _.forEach(configList, (config: OperationConfig) => {          
+        _.forEach(configList, (config: OperationConfig) => {
             if (filterFn(config)) {
                 const configData = this.normalizeConfig(config, configList);
                 const opType = config[type];
+                // tslint:disable-next-line
                 const Op = Operations.opNames[opType as string];
                 if (!Op) throw new Error(`could not find ${opType} module, config: ${JSON.stringify(config)}`);
-                if (!postProcessPhase[configData.registrationSelector]) postProcessPhase[configData.registrationSelector] = [];
-                postProcessPhase[configData.registrationSelector].push(new Op(configData.configuration));
+                if (!this.postProcessPhase[configData.registrationSelector]) this.postProcessPhase[configData.registrationSelector] = [];
+                this.postProcessPhase[configData.registrationSelector].push(new Op(configData.configuration));
             }
         });
     }
@@ -45,6 +45,7 @@ export default class PostProcessPhase implements PhaseBase {
             }
         });
         if (Object.keys(requirements).length > 0) {
+            // tslint:disable-next-line
             const Op = Operations.Keys;
             if (Object.keys(this.postProcessPhase).length === 0) {
                 this.postProcessPhase['*'] = [];
@@ -66,29 +67,27 @@ export default class PostProcessPhase implements PhaseBase {
                 if (!container.targetConfig) container.targetConfig = referenceConfig;
                 // recurse
                 if (referenceConfig.refs) {
-                     return findConfiguration(referenceConfig, container);
-                } else {
-                    if (referenceConfig.selector) container.registrationSelector = referenceConfig.selector;
+                    return findConfiguration(referenceConfig, container);
                 }
+                if (referenceConfig.selector) container.registrationSelector = referenceConfig.selector;
             } else {
                 if (!container.targetConfig) container.targetConfig = myConfig;
             }
             return container;
         }
 
-         const { registrationSelector, targetConfig } = findConfiguration(config, data);
+        const { registrationSelector, targetConfig } = findConfiguration(config, data);
         if (!registrationSelector || !targetConfig) throw new Error('could not find orignal selector and target configuration');
         // a validation/post-op source is the target_field of the previous op
         const formattedTargetConfig = {};
-        if (targetConfig.target_field) formattedTargetConfig['source_field'] = targetConfig.target_field
+        if (targetConfig.target_field) formattedTargetConfig['source_field'] = targetConfig.target_field;
         const finalConfig = _.assign({}, config, formattedTargetConfig);
 
         return { configuration: finalConfig, registrationSelector };
     }
 
     run(dataArray: DataEntity[]): DataEntity[] {
-        const { postProcessPhase, hasPostProcessing } = this;
-        if (!hasPostProcessing) return dataArray;
+        if (!this.hasPostProcessing) return dataArray;
         const resultsList: DataEntity[] = [];
 
         _.each(dataArray, (record) => {
@@ -96,8 +95,8 @@ export default class PostProcessPhase implements PhaseBase {
             let results: DataEntity | null = record;
 
             _.forOwn(selectors, (_value, key) => {
-                if (postProcessPhase[key]) {
-                    results = postProcessPhase[key].reduce<DataEntity | null>((record, fn) => {
+                if (this.postProcessPhase[key]) {
+                    results = this.postProcessPhase[key].reduce<DataEntity | null>((record, fn) => {
                         if (!record) return record;
                         return fn.run(record);
                     }, results);
@@ -106,7 +105,7 @@ export default class PostProcessPhase implements PhaseBase {
 
             if (results && Object.keys(results).length > 0) {
                 const secondarySelectors = results.getMetadata('selectors');
-                results.setMetadata('selectors', _.assign(selectors, secondarySelectors))
+                results.setMetadata('selectors', _.assign(selectors, secondarySelectors));
                 resultsList.push(results);
             }
         });

@@ -27,14 +27,13 @@ export default class Transform extends OperationBase {
     }
 
     run(doc: DataEntity): DataEntity | null {
-        const { config, isMutation, target, source } = this;
-        let data = doc[source];
+        const data = doc[this.source];
         if (data) {
             const metaData = doc.getMetadata();
             let transformedResult;
 
-            if (config.regex) {
-                const { regex } = config;
+            if (this.config.regex) {
+                const { regex } = this.config;
                 let extractedField;
                 if (typeof data === 'string') extractedField = data.match(regex as string);
 
@@ -52,12 +51,13 @@ export default class Transform extends OperationBase {
                     if (regexResult) transformedResult = regexResult;
                 }
 
-            } else if (config.start && config.end) {
-                let { start, end } = config;
-                if (end === "EOP") end = '&';
+            } else if (this.config.start && this.config.end) {
+                // tslint:disable-next-line
+                let { start, end } = this.config;
+                if (end === 'EOP') end = '&';
 
                 if (typeof data === 'string') {
-                    const extractedSlice = this.sliceString(data, start, end)
+                    const extractedSlice = this.sliceString(data, start, end);
                     if (extractedSlice) transformedResult = extractedSlice;
                 }
                 if (Array.isArray(data)) {
@@ -73,14 +73,14 @@ export default class Transform extends OperationBase {
             }
 
             if (transformedResult)  {
-                if (isMutation) {
-                    _.set(doc, target, transformedResult);
+                if (this.isMutation) {
+                    _.set(doc, this.target, transformedResult);
                     return doc;
                 }
-                return new DataEntity(_.set({}, target, transformedResult), metaData);
+                return new DataEntity(_.set({}, this.target, transformedResult), metaData);
             }
         }
-        if (isMutation) return doc;
+        if (this.isMutation) return doc;
         return null;
     }
 }

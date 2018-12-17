@@ -1,9 +1,9 @@
 
 import { DataEntity } from '@terascope/job-components';
 import { OperationConfig } from '../../../interfaces';
-import OperationBase from '../base'
+import OperationBase from '../base';
 
-export default class Base64Decode extends OperationBase { 
+export default class Base64Decode extends OperationBase {
     constructor(config: OperationConfig) {
         super(config);
     }
@@ -13,6 +13,6 @@ export default class Base64Decode extends OperationBase {
     }
 
     run(record: DataEntity): DataEntity | null {
-        return this.decode(record, this.decoderFn)
+        return this.decode(record, this.decoderFn);
     }
 }

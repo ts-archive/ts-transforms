@@ -1,30 +1,30 @@
 
-import { Number } from '../../../src/operations';
+import { Number as NumberOp } from '../../../src/operations';
 import { DataEntity } from '@terascope/job-components';
 
 describe('number validation', () => {
-   
+
     it('can instantiate', () => {
         const opConfig = { source_field: 'someField' };
-        expect(() => new Number(opConfig)).not.toThrow()
+        expect(() => new NumberOp(opConfig)).not.toThrow();
     });
 
     it('can properly throw with bad config values', () => {
         const badConfig1 = { source_field: 1324 };
-        const badConfig2 = { source_field: "" };
+        const badConfig2 = { source_field: '' };
         const badConfig3 = { source_field: {} };
         const badConfig4 = {};
-        //@ts-ignore
-        expect(() => new Number(badConfig1)).toThrow();
-        expect(() => new Number(badConfig2)).toThrow();
-         //@ts-ignore
-        expect(() => new Number(badConfig3)).toThrow();
-        expect(() => new Number(badConfig4)).toThrow();
+        // @ts-ignore
+        expect(() => new NumberOp(badConfig1)).toThrow();
+        expect(() => new NumberOp(badConfig2)).toThrow();
+         // @ts-ignore
+        expect(() => new NumberOp(badConfig3)).toThrow();
+        expect(() => new NumberOp(badConfig4)).toThrow();
     });
 
     it('can validate number fields', () => {
         const opConfig = { source_field: 'bytes' };
-        const test =  new Number(opConfig);
+        const test =  new NumberOp(opConfig);
         const metaData = { selectors: { 'some:query' : true } };
 
         const data1 = new DataEntity({ bytes: '56.234,95.234' }, metaData);
@@ -44,9 +44,9 @@ describe('number validation', () => {
         const results7 = test.run(data7);
 
         expect(DataEntity.isDataEntity(results1)).toEqual(true);
-        expect(DataEntity.getMetadata(results1 as DataEntity, 'selectors')).toEqual(metaData.selectors)
+        expect(DataEntity.getMetadata(results1 as DataEntity, 'selectors')).toEqual(metaData.selectors);
         expect(results1).toEqual({});
-        expect(DataEntity.getMetadata(results2 as DataEntity, 'selectors')).toEqual(metaData.selectors)
+        expect(DataEntity.getMetadata(results2 as DataEntity, 'selectors')).toEqual(metaData.selectors);
         expect(results2).toEqual(data2);
         expect(results3).toEqual({});
         expect(results4).toEqual({});

@@ -5,7 +5,6 @@ import _ from 'lodash';
 import OperationBase from '../base';
 import querystring from 'querystring';
 
-
 export default class UrlDecode extends OperationBase {
     constructor(config: OperationConfig) {
         super(config);
@@ -16,6 +15,6 @@ export default class UrlDecode extends OperationBase {
     }
 
     run(record: DataEntity): DataEntity | null {
-        return this.decode(record, this.decoderFn)
+        return this.decode(record, this.decoderFn);
     }
 }

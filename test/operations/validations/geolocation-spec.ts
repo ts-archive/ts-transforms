@@ -3,21 +3,21 @@ import { Geolocation } from '../../../src/operations';
 import { DataEntity } from '@terascope/job-components';
 
 describe('geolocation validation', () => {
-   
+
     it('can instantiate', () => {
         const opConfig = { source_field: 'someField' };
-        expect(() => new Geolocation(opConfig)).not.toThrow()
+        expect(() => new Geolocation(opConfig)).not.toThrow();
     });
 
     it('can properly throw with bad config values', () => {
         const badConfig1 = { source_field: 1324 };
-        const badConfig2 = { source_field: "" };
+        const badConfig2 = { source_field: '' };
         const badConfig3 = { source_field: {} };
         const badConfig4 = {};
-        //@ts-ignore
+        // @ts-ignore
         expect(() => new Geolocation(badConfig1)).toThrow();
         expect(() => new Geolocation(badConfig2)).toThrow();
-        //@ts-ignore
+        // @ts-ignore
         expect(() => new Geolocation(badConfig3)).toThrow();
         expect(() => new Geolocation(badConfig4)).toThrow();
     });
@@ -32,10 +32,10 @@ describe('geolocation validation', () => {
         const data3 = new DataEntity({ location: '56.234' });
         const data4 = new DataEntity({ location: 12341234 });
         const data5 = new DataEntity({ location: [{ some: 'data' }] });
-        const data6 = new DataEntity({ location: { lat: 'thing'} });
-        const data7 = new DataEntity({ location: { lat: '56.234', lon: '95.234'} });
-        const data8 = new DataEntity({ location: { latitude: '56.234', longitude: '95.234'} }, metaData);
-        const data9 = new DataEntity({ location: { longitude: { other:'things'}} });
+        const data6 = new DataEntity({ location: { lat: 'thing' } });
+        const data7 = new DataEntity({ location: { lat: '56.234', lon: '95.234' } });
+        const data8 = new DataEntity({ location: { latitude: '56.234', longitude: '95.234' } }, metaData);
+        const data9 = new DataEntity({ location: { longitude: { other:'things' } } });
 
         const results1 = test.run(data1);
         const results2 = test.run(data2);
@@ -48,7 +48,7 @@ describe('geolocation validation', () => {
         const results9 = test.run(data9);
 
         expect(DataEntity.isDataEntity(results1)).toEqual(true);
-        expect(DataEntity.getMetadata(results1 as DataEntity, 'selectors')).toEqual(metaData.selectors)
+        expect(DataEntity.getMetadata(results1 as DataEntity, 'selectors')).toEqual(metaData.selectors);
         expect(results1).toEqual(data1);
         expect(results2).toEqual(data2);
         expect(results3).toEqual({});
@@ -59,7 +59,7 @@ describe('geolocation validation', () => {
         expect(results7).toEqual(data7);
         expect(DataEntity.isDataEntity(results8)).toEqual(true);
         expect(results8).toEqual(data8);
-        expect(DataEntity.getMetadata(results8 as DataEntity, 'selectors')).toEqual(metaData.selectors)
+        expect(DataEntity.getMetadata(results8 as DataEntity, 'selectors')).toEqual(metaData.selectors);
         expect(results9).toEqual({});
     });
 });

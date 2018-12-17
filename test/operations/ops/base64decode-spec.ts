@@ -8,33 +8,33 @@ describe('base64 operation', () => {
         const buff = Buffer.from(str);
         return buff.toString('base64');
     }
-   
+
     it('can instantiate', () => {
         const opConfig = { target_field: 'final', source_field: 'source' };
-        expect(() => new Base64Decode(opConfig)).not.toThrow()
+        expect(() => new Base64Decode(opConfig)).not.toThrow();
     });
 
     it('can properly throw with bad config values', () => {
         const badConfig1 = { target_field: 1324 };
-        const badConfig2 = { target_field: "" };
+        const badConfig2 = { target_field: '' };
         const badConfig3 = { target_field: {} };
         const badConfig4 = { target_field: null };
         const badConfig5 = { source_field: [] };
         const badConfig6 = { source_field: {} };
         const badConfig7 = { source_field: null };
         const badConfig8 = { source_field: '', target_field: '' };
-        //@ts-ignore
+        // @ts-ignore
         expect(() => new Base64Decode(badConfig1)).toThrow();
         expect(() => new Base64Decode(badConfig2)).toThrow();
-        //@ts-ignore
+        // @ts-ignore
         expect(() => new Base64Decode(badConfig3)).toThrow();
-        //@ts-ignore
+        // @ts-ignore
         expect(() => new Base64Decode(badConfig4)).toThrow();
-        //@ts-ignore
+        // @ts-ignore
         expect(() => new Base64Decode(badConfig5)).toThrow();
-        //@ts-ignore
+        // @ts-ignore
         expect(() => new Base64Decode(badConfig6)).toThrow();
-        //@ts-ignore
+        // @ts-ignore
         expect(() => new Base64Decode(badConfig7)).toThrow();
         expect(() => new Base64Decode(badConfig8)).toThrow();
     });
@@ -50,11 +50,11 @@ describe('base64 operation', () => {
         const data4 = new DataEntity({ source: { some: 'data' } });
         const data5 = new DataEntity({ source: true }, metaData);
         const data6 = new DataEntity({});
-        const data7 = new DataEntity({ source: encode('http://google.com') });
-        const data8 = new DataEntity({ source: encode('ha3ke5@pawnage.com')}, metaData);
+        const data7 = new DataEntity({ source: encode('http:// google.com') });
+        const data8 = new DataEntity({ source: encode('ha3ke5@pawnage.com') }, metaData);
         const data9 = new DataEntity({ source: encode('::') });
         const data10 = new DataEntity({ source: encode('193.0.0.23') }, metaData);
-        const data11 = new DataEntity({ source: encode("hello world") }, metaData);
+        const data11 = new DataEntity({ source: encode('hello world') }, metaData);
 
         const results1 = test.run(data1);
         const results2 = test.run(data2);
@@ -69,20 +69,20 @@ describe('base64 operation', () => {
         const results11 = test.run(data11);
 
         expect(DataEntity.isDataEntity(results1)).toEqual(true);
-        expect(DataEntity.getMetadata(results1 as DataEntity, 'selectors')).toEqual(metaData.selectors)
+        expect(DataEntity.getMetadata(results1 as DataEntity, 'selectors')).toEqual(metaData.selectors);
         expect(results1).toEqual({});
-        expect(DataEntity.getMetadata(results2 as DataEntity, 'selectors')).toEqual(metaData.selectors)
+        expect(DataEntity.getMetadata(results2 as DataEntity, 'selectors')).toEqual(metaData.selectors);
         expect(results2).toEqual({});
         expect(results3).toEqual({});
         expect(results4).toEqual({});
         expect(results5).toEqual({});
         expect(results6).toEqual({});
-        expect(results7).toEqual({ final: 'http://google.com', source: encode('http://google.com') });
+        expect(results7).toEqual({ final: 'http:// google.com', source: encode('http:// google.com') });
         expect(results8).toEqual({ final: 'ha3ke5@pawnage.com', source: encode('ha3ke5@pawnage.com') });
         expect(results9).toEqual({ final: '::' , source: encode('::') });
         expect(results10).toEqual({ final: '193.0.0.23', source: encode('193.0.0.23') });
-        expect(DataEntity.getMetadata(results11 as DataEntity, 'selectors')).toEqual(metaData.selectors)
-        expect(results11).toEqual({ final: 'hello world', source: encode('hello world')});
+        expect(DataEntity.getMetadata(results11 as DataEntity, 'selectors')).toEqual(metaData.selectors);
+        expect(results11).toEqual({ final: 'hello world', source: encode('hello world') });
     });
 
     it('can base64 decode fields and remove source', () => {
@@ -90,11 +90,11 @@ describe('base64 operation', () => {
         const test =  new Base64Decode(opConfig);
         const metaData = { selectors: { 'some:query' : true } };
 
-        const data = new DataEntity({ source: encode("hello world") }, metaData);
+        const data = new DataEntity({ source: encode('hello world') }, metaData);
 
         const results = test.run(data);
 
-        expect(DataEntity.getMetadata(results as DataEntity, 'selectors')).toEqual(metaData.selectors)
+        expect(DataEntity.getMetadata(results as DataEntity, 'selectors')).toEqual(metaData.selectors);
         expect(results).toEqual({ final: 'hello world' });
     });
 });

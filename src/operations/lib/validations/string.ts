@@ -1,7 +1,7 @@
 
 import OperationBase from '../base';
 import { DataEntity } from '@terascope/job-components';
-import { StringRefs } from '../../../interfaces'
+import { StringRefs } from '../../../interfaces';
 import _ from 'lodash';
 
 export default class String extends OperationBase {
@@ -13,9 +13,8 @@ export default class String extends OperationBase {
     }
 
     run(data: DataEntity): DataEntity | null {
-        const { source, length } = this;
-        if (typeof data[source] !== 'string') _.unset(data, source);
-        if (length && data[source] && data[source].length !== length) _.unset(data, source);
+        if (typeof data[this.source] !== 'string') _.unset(data, this.source);
+        if (this.length && data[this.source] && data[this.source].length !== this.length) _.unset(data, this.source);
         return data;
     }
 }

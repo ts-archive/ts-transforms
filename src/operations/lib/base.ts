@@ -1,6 +1,6 @@
 
 import { DataEntity } from '@terascope/job-components';
-import { OperationConfig } from '../../interfaces'
+import { OperationConfig } from '../../interfaces';
 import _ from 'lodash';
 
 export default abstract class OperationBase {
@@ -19,8 +19,8 @@ export default abstract class OperationBase {
         // we don't need to check target or source for selector ops
         if (this.constructor.name === 'Selector' || this.constructor.name === 'Keys') return;
         const { target_field: targetField, source_field: sField, remove_source } = config;
-        let tField = targetField || sField;
-        if (remove_source && typeof remove_source !== 'boolean') throw new Error('remove_source if specified must be of type boolean')
+        const tField = targetField || sField;
+        if (remove_source && typeof remove_source !== 'boolean') throw new Error('remove_source if specified must be of type boolean');
         if (!tField || typeof tField !== 'string' || tField.length === 0) throw new Error(`could not find target_field for ${this.constructor.name} validation or it is improperly formatted, config: ${JSON.stringify(config)}`);
         if (!sField || typeof sField !== 'string' || sField.length === 0) throw new Error(`could not find source_field for ${this.constructor.name} validation or it is improperly formatted, config: ${JSON.stringify(config)}`);
         if (remove_source) this.removeSource = remove_source;
@@ -29,7 +29,7 @@ export default abstract class OperationBase {
     }
 
     protected parseField(str: string): string {
-       return str.lastIndexOf('.') === -1 ?
+        return str.lastIndexOf('.') === -1 ?
        str : str.slice(0, str.lastIndexOf('.'));
     }
 
@@ -41,7 +41,7 @@ export default abstract class OperationBase {
             } else {
                 decodeFn(doc, data, this.target);
             }
-        } catch(err) {
+        } catch (err) {
             _.unset(doc, this.source);
         }
 
@@ -49,5 +49,5 @@ export default abstract class OperationBase {
         return doc;
     }
 
-    abstract run(data: DataEntity): null | DataEntity
+    abstract run(data: DataEntity): null | DataEntity;
 }

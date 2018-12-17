@@ -1,5 +1,5 @@
 
-import OperationBase from './lib/base'
+import OperationBase from './lib/base';
 import Join from './lib/ops/join';
 import Selector from './lib/ops/selector';
 import Transform  from './lib/ops/transform';

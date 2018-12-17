@@ -5,36 +5,35 @@ import * as Ops from '../operations';
 import _ from 'lodash';
 
 export default class TransformPhase implements PhaseBase {
-     //@ts-ignore
+     // @ts-ignore
     private opConfig: WatcherConfig;
     private transformPhase: OperationsDictionary;
     private hasTransforms: boolean;
 
-    constructor(opConfig: WatcherConfig, configList:OperationConfig[]){
+    constructor(opConfig: WatcherConfig, configList:OperationConfig[]) {
         this.opConfig = opConfig;
         const transformPhase: OperationsDictionary = {};
 
         _.forEach(configList, (config: OperationConfig) => {
             if (!config.refs && (config.source_field && config.target_field)) {
                 if (!transformPhase[config.selector as string]) transformPhase[config.selector as string] = [];
-                transformPhase[config.selector as string].push(new Ops.Transform(config))
+                transformPhase[config.selector as string].push(new Ops.Transform(config));
             }
         });
         this.transformPhase = transformPhase;
         this.hasTransforms = Object.keys(transformPhase).length > 0;
     }
 
-    run(dataArray: DataEntity[]): DataEntity[]{
-        const { transformPhase, hasTransforms } = this;
-        if (!hasTransforms) return dataArray;
+    run(dataArray: DataEntity[]): DataEntity[] {
+        if (!this.hasTransforms) return dataArray;
 
         const resultsList: DataEntity[] = [];
         _.each(dataArray, (record) => {
             const selectors = record.getMetadata('selectors');
-            let results = {};
+            const results = {};
             _.forOwn(selectors, (_value, key) => {
-                if (transformPhase[key]) {
-                    transformPhase[key].forEach(fn => _.merge(results, fn.run(record)));
+                if (this.transformPhase[key]) {
+                    this.transformPhase[key].forEach(fn => _.merge(results, fn.run(record)));
                 }
             });
 
