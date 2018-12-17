@@ -7,7 +7,6 @@ import readline from 'readline';
 import fs from 'fs';
 import { debugLogger, DataEntity } from '@terascope/job-components';
 import _ from 'lodash';
-import { WSAEINVALIDPROCTABLE } from 'constants';
 
 const logger = debugLogger('ts-transform-cli');
 const dir = process.cwd();
