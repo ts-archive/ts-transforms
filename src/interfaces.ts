@@ -18,6 +18,7 @@ export interface OperationConfig {
     remove_source?: boolean;
     registration_selector?:string;
     mutate?: boolean;
+    other_match_required?: boolean;
 }
 //TODO: fix registrationSelector above
 export interface Refs {

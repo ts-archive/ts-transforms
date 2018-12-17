@@ -17,7 +17,7 @@ export default abstract class OperationBase {
 
     protected validate(config: OperationConfig) {
         // we don't need to check target or source for selector ops
-        if (this.constructor.name === 'Selector') return;
+        if (this.constructor.name === 'Selector' || this.constructor.name === 'Keys') return;
         const { target_field: targetField, source_field: sField, remove_source } = config;
         let tField = targetField || sField;
         if (remove_source && typeof remove_source !== 'boolean') throw new Error('remove_source if specified must be of type boolean')

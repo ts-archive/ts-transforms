@@ -439,4 +439,53 @@ describe('can transform matches', () => {
             expect(data).toEqual(resultSet[index]);
         });
     });
+
+    it('it can transform data if previous transforms had occured', async () => {
+        const config: WatcherConfig = {
+            file_path: getPath("transformRules14.txt"),
+            type: 'transform'
+        };
+
+        const date = new Date().toISOString();
+        const key = '123456789';
+
+        const data = DataEntity.makeArray([
+            { domain: "example.com", url: "http://www.example.com/path?value=blah&value2=moreblah&value3=evenmoreblah" , date, key },
+        ]);
+
+        //should not expect anything back
+        const data2 = DataEntity.makeArray([
+            { domain: "example.com", hello: "world", data: 'otherData', date, key },
+            {}
+        ]);
+
+        //should not expect anything back
+        const data3 = DataEntity.makeArray([
+            { domain: "example.com", url: "http://www.example.com/path?value=blah&value2=moreblah&value3=evenmoreblah", date },
+            {}
+        ]);
+
+        const test1 = await opTest.init(config);
+        const results1 =  await test1.run(data);
+
+        expect(results1.length).toEqual(1);
+        expect(results1[0]).toEqual({
+            value: 'blah',
+            value2: 'moreblah',
+            key,
+            date
+        });
+
+        const test2 = await opTest.init(config);
+        const results2 =  await test2.run(data2);
+
+        expect(results2.length).toEqual(0);
+        expect(results2).toEqual([]);
+
+        const test3 = await opTest.init(config);
+        const results3 =  await test3.run(data3);
+
+        expect(results3.length).toEqual(0);
+        expect(results3).toEqual([]);
+    });
 });
