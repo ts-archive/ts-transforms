@@ -10,7 +10,8 @@ export default class Boolean extends OperationBase {
     }
 
     run(doc: DataEntity): DataEntity | null {
-        if (!_.isBoolean(doc[this.source])) _.unset(doc, this.source);
+        const field = _.get(doc, this.source);
+        if (!_.isBoolean(field) && field !== 'true' && field !== 'false') _.unset(doc, this.source);
         return doc;
     }
 }

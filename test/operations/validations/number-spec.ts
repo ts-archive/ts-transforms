@@ -48,7 +48,7 @@ describe('number validation', () => {
         expect(results1).toEqual({});
         expect(DataEntity.getMetadata(results2 as DataEntity, 'selectors')).toEqual(metaData.selectors);
         expect(results2).toEqual(data2);
-        expect(results3).toEqual({});
+        expect(results3).toEqual(data3);
         expect(results4).toEqual({});
         expect(results5).toEqual({});
         expect(results6).toEqual({});

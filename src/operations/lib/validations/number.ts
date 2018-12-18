@@ -10,7 +10,8 @@ export default class Number extends OperationBase {
     }
 
     run(doc: DataEntity): DataEntity | null {
-        if (!_.isNumber(doc[this.source])) _.unset(doc, this.source);
+        const field = _.get(doc, this.source);
+        if (!(typeof field === 'string' || typeof field === 'number') || _.isNaN(_.toNumber(field))) _.unset(doc, this.source);
         return doc;
     }
 }

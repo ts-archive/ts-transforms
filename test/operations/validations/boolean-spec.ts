@@ -33,7 +33,7 @@ describe('boolean validation', () => {
         const data4 = new DataEntity({ isTall: [1324] });
         const data5 = new DataEntity({ isTall: { some: 'data' } });
         const data6 = new DataEntity({ isTall: true }, metaData);
-        const data7 = new DataEntity({});
+        const data7 = new DataEntity({  isTall: 'true' });
 
         const results1 = test.run(data1);
         const results2 = test.run(data2);
@@ -53,6 +53,6 @@ describe('boolean validation', () => {
         expect(results5).toEqual({});
         expect(results6).toEqual(data6);
         expect(DataEntity.getMetadata(results6 as DataEntity, 'selectors')).toEqual(metaData.selectors);
-        expect(results7).toEqual({});
+        expect(results7).toEqual(data7);
     });
 });
