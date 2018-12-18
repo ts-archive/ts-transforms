@@ -12,16 +12,28 @@ export default class TransformPhase implements PhaseBase {
 
     constructor(opConfig: WatcherConfig, configList:OperationConfig[]) {
         this.opConfig = opConfig;
-        const transformPhase: OperationsDictionary = {};
+        this.transformPhase = {};
 
         _.forEach(configList, (config: OperationConfig) => {
             if (!config.refs && (config.source_field && config.target_field)) {
-                if (!transformPhase[config.selector as string]) transformPhase[config.selector as string] = [];
-                transformPhase[config.selector as string].push(new Ops.Transform(config));
+                if (config.selector) {
+                    if (!this.transformPhase[config.selector as string]) this.transformPhase[config.selector as string] = [];
+                    this.transformPhase[config.selector as string].push(new Ops.Transform(config));
+                }
             }
         });
-        this.transformPhase = transformPhase;
-        this.hasTransforms = Object.keys(transformPhase).length > 0;
+
+        _.forEach(configList, (config: OperationConfig) => {
+            if (!config.refs && (config.source_field && config.target_field)) {
+                if (config.other_match_required) {
+                    _.forOwn(this.transformPhase, (sequence: Ops.OperationBase[], _key) => {
+                        sequence.push(new Ops.Transform(config));
+                    });
+                }
+            }
+        });
+
+        this.hasTransforms = Object.keys(this.transformPhase).length > 0;
     }
 
     run(dataArray: DataEntity[]): DataEntity[] {
@@ -31,6 +43,7 @@ export default class TransformPhase implements PhaseBase {
         _.each(dataArray, (record) => {
             const selectors = record.getMetadata('selectors');
             const results = {};
+
             _.forOwn(selectors, (_value, key) => {
                 if (this.transformPhase[key]) {
                     this.transformPhase[key].forEach(fn => _.merge(results, fn.run(record)));

@@ -47,12 +47,8 @@ export default class PostProcessPhase implements PhaseBase {
         if (Object.keys(requirements).length > 0) {
             // tslint:disable-next-line
             const Op = Operations.Keys;
-            if (Object.keys(this.postProcessPhase).length === 0) {
-                this.postProcessPhase['*'] = [];
-            }
-            _.forOwn(this.postProcessPhase, (sequence: Operations.OperationBase[], _key) => {
-                sequence.push(new Op(requirements));
-            });
+            if (!this.postProcessPhase['__all']) this.postProcessPhase['__all'] = [];
+            this.postProcessPhase.__all.push(new Op(requirements));
         }
     }
 
@@ -102,6 +98,13 @@ export default class PostProcessPhase implements PhaseBase {
                     }, results);
                 }
             });
+
+            if (this.postProcessPhase.__all) {
+                results = this.postProcessPhase.__all.reduce<DataEntity | null>((record, fn) => {
+                    if (!record) return record;
+                    return fn.run(record);
+                }, results);
+            }
 
             if (results && Object.keys(results).length > 0) {
                 const secondarySelectors = results.getMetadata('selectors');

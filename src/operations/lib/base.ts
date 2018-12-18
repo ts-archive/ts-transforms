@@ -21,8 +21,12 @@ export default abstract class OperationBase {
         const { target_field: targetField, source_field: sField, remove_source } = config;
         const tField = targetField || sField;
         if (remove_source && typeof remove_source !== 'boolean') throw new Error('remove_source if specified must be of type boolean');
-        if (!tField || typeof tField !== 'string' || tField.length === 0) throw new Error(`could not find target_field for ${this.constructor.name} validation or it is improperly formatted, config: ${JSON.stringify(config)}`);
-        if (!sField || typeof sField !== 'string' || sField.length === 0) throw new Error(`could not find source_field for ${this.constructor.name} validation or it is improperly formatted, config: ${JSON.stringify(config)}`);
+        if (!tField || typeof tField !== 'string' || tField.length === 0) {
+            throw new Error(`could not find target_field for ${this.constructor.name} validation or it is improperly formatted, config: ${JSON.stringify(config)}`);
+        }
+        if (!sField || typeof sField !== 'string' || sField.length === 0) {
+            throw new Error(`could not find source_field for ${this.constructor.name} validation or it is improperly formatted, config: ${JSON.stringify(config)}`);
+        }
         if (remove_source) this.removeSource = remove_source;
         this.source = this.parseField(sField);
         this.target = tField;
