@@ -1,12 +1,12 @@
 
-import { Url } from '../../../src/operations';
+import { Url as UrlOp } from '../../../src/operations';
 import { DataEntity } from '@terascope/job-components';
 
 describe('url validation', () => {
 
     it('can instantiate', () => {
         const opConfig = { source_field: 'someField' };
-        expect(() => new Url(opConfig)).not.toThrow();
+        expect(() => new UrlOp(opConfig)).not.toThrow();
     });
 
     it('can properly throw with bad config values', () => {
@@ -15,16 +15,16 @@ describe('url validation', () => {
         const badConfig3 = { source_field: {} };
         const badConfig4 = {};
         // @ts-ignore
-        expect(() => new Url(badConfig1)).toThrow();
-        expect(() => new Url(badConfig2)).toThrow();
+        expect(() => new UrlOp(badConfig1)).toThrow();
+        expect(() => new UrlOp(badConfig2)).toThrow();
          // @ts-ignore
-        expect(() => new Url(badConfig3)).toThrow();
-        expect(() => new Url(badConfig4)).toThrow();
+        expect(() => new UrlOp(badConfig3)).toThrow();
+        expect(() => new UrlOp(badConfig4)).toThrow();
     });
 
     it('can validate boolean fields', () => {
         const opConfig = { source_field: 'uri' };
-        const test =  new Url(opConfig);
+        const test =  new UrlOp(opConfig);
         const metaData = { selectors: { 'some:query' : true } };
 
         const data1 = new DataEntity({ uri: '56.234,95.234' }, metaData);
@@ -63,5 +63,30 @@ describe('url validation', () => {
         expect(results8).toEqual(data8);
         expect(results9).toEqual(data9);
         expect(results10).toEqual(data10);
+    });
+
+    it('can validate nested fields', async() => {
+        const opConfig = { refs: 'someId', source_field: 'event.href', length: 14 };
+        const test =  new UrlOp(opConfig);
+
+        const data1 = new DataEntity({ event: 'something' });
+        const data2 = new DataEntity({ event: {} });
+        const data3 = new DataEntity({ event: { href: '123423' } });
+        const data4 = new DataEntity({ event: { href: 432423 } });
+        const data5 = new DataEntity({ event: { href: 'http://google.com' } });
+
+        const results1 = test.run(data1);
+        const results2 = test.run(data2);
+        const results3 = test.run(data3);
+        const results4 = test.run(data4);
+        const results5 = test.run(data5);
+
+        expect(results1).toEqual(data1);
+        expect(results2).toEqual(data2);
+        expect(results3).toEqual(data2);
+        expect(results4).toEqual(data2);
+        expect(results5).toEqual(data5);
+
+        expect(DataEntity.isDataEntity(results1)).toEqual(true);
     });
 });

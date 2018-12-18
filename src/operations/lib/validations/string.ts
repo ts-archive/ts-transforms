@@ -12,9 +12,10 @@ export default class String extends OperationBase {
         this.length = config.length;
     }
 
-    run(data: DataEntity): DataEntity | null {
-        if (typeof data[this.source] !== 'string') _.unset(data, this.source);
-        if (this.length && data[this.source] && data[this.source].length !== this.length) _.unset(data, this.source);
-        return data;
+    run(doc: DataEntity): DataEntity | null {
+        const field = _.get(doc, this.source);
+        if (typeof field !== 'string') _.unset(doc, this.source);
+        if (this.length && field && field.length !== this.length) _.unset(doc, this.source);
+        return doc;
     }
 }

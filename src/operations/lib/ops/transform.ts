@@ -27,8 +27,8 @@ export default class Transform extends OperationBase {
     }
 
     run(doc: DataEntity): DataEntity | null {
-        const data = doc[this.source];
-        if (data) {
+        const data = _.get(doc, this.source);
+        if (data !== undefined) {
             const metaData = doc.getMetadata();
             let transformedResult;
 
@@ -72,7 +72,7 @@ export default class Transform extends OperationBase {
                 transformedResult = data;
             }
 
-            if (transformedResult)  {
+            if (transformedResult !== undefined)  {
                 if (this.isMutation) {
                     _.set(doc, this.target, transformedResult);
                     return doc;

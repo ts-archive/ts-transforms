@@ -75,4 +75,29 @@ describe('string validation', () => {
         expect(DataEntity.getMetadata(results2 as DataEntity, 'selectors')).toEqual(metaData.selectors);
         expect(results2).toEqual(data2);
     });
+
+    it('can validate nested fields', async() => {
+        const opConfig = { refs: 'someId', source_field: 'person.name', length: 14 };
+        const test =  new StringOp(opConfig);
+
+        const data1 = new DataEntity({ person: 'something' });
+        const data2 = new DataEntity({ person: {} });
+        const data3 = new DataEntity({ person: { name: '123423' } });
+        const data4 = new DataEntity({ person: { name: 432423 } });
+        const data5 = new DataEntity({ person: { name: 'sadrasfwe32q' } });
+
+        const results1 = test.run(data1);
+        const results2 = test.run(data2);
+        const results3 = test.run(data3);
+        const results4 = test.run(data4);
+        const results5 = test.run(data5);
+
+        expect(results1).toEqual(data1);
+        expect(results2).toEqual(data2);
+        expect(results3).toEqual(data3);
+        expect(results4).toEqual(data2);
+        expect(results5).toEqual(data5);
+
+        expect(DataEntity.isDataEntity(results1)).toEqual(true);
+    });
 });

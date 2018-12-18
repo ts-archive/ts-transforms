@@ -10,8 +10,8 @@ export default class UrlDecode extends OperationBase {
         super(config);
     }
 
-    decoderFn(doc: DataEntity, data:string, target: string) {
-        doc[target] = querystring.unescape(data);
+    decoderFn(data:string) {
+        return querystring.unescape(data);
     }
 
     run(record: DataEntity): DataEntity | null {

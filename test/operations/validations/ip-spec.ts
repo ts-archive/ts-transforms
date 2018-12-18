@@ -71,4 +71,29 @@ describe('ip validation', () => {
         expect(DataEntity.getMetadata(results11 as DataEntity, 'selectors')).toEqual(metaData.selectors);
         expect(results12).toEqual({});
     });
+
+    it('can validate nested fields', async() => {
+        const opConfig = { source_field: 'event.ipAddress' };
+        const test =  new Ip(opConfig);
+
+        const data1 = new DataEntity({ event: 'something' });
+        const data2 = new DataEntity({ event: {} });
+        const data3 = new DataEntity({ event: { ipAddress: '193.0.0.23' } });
+        const data4 = new DataEntity({ event: { ipAddress: '::' } });
+        const data5 = new DataEntity({ event: { ipAddress: 'sadrasfwe32q' } });
+
+        const results1 = test.run(data1);
+        const results2 = test.run(data2);
+        const results3 = test.run(data3);
+        const results4 = test.run(data4);
+        const results5 = test.run(data5);
+
+        expect(results1).toEqual(data1);
+        expect(results2).toEqual(data2);
+        expect(results3).toEqual(data3);
+        expect(results4).toEqual(data4);
+        expect(results5).toEqual(data2);
+
+        expect(DataEntity.isDataEntity(results1)).toEqual(true);
+    });
 });

@@ -28,22 +28,21 @@ export default abstract class OperationBase {
             throw new Error(`could not find source_field for ${this.constructor.name} validation or it is improperly formatted, config: ${JSON.stringify(config)}`);
         }
         if (remove_source) this.removeSource = remove_source;
-        this.source = this.parseField(sField);
+        this.source = sField;
         this.target = tField;
     }
 
-    protected parseField(str: string): string {
-        return str.lastIndexOf('.') === -1 ?
-       str : str.slice(0, str.lastIndexOf('.'));
+    protected fieldPath(str: string): string {
+        return str.lastIndexOf('.') === -1 ? str : str.slice(0, str.lastIndexOf('.'));
     }
 
     protected decode(doc: DataEntity, decodeFn: Function) {
         try {
-            const data = doc[this.source];
+            const data = _.get(doc, this.source);
             if (typeof data !== 'string') {
                 _.unset(doc, this.source);
             } else {
-                decodeFn(doc, data, this.target);
+                _.set(doc, this.target, decodeFn(data));
             }
         } catch (err) {
             _.unset(doc, this.source);

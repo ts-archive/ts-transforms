@@ -11,7 +11,8 @@ export default class Url extends OperationBase {
     }
 
     run(doc: DataEntity): DataEntity | null {
-        if (typeof doc[this.source] !== 'string' || !url.isUri(doc[this.source])) _.unset(doc, this.source);
+        const field = _.get(doc, this.source);
+        if (typeof field !== 'string' || !url.isUri(field)) _.unset(doc, this.source);
         return doc;
     }
 }

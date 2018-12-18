@@ -22,14 +22,13 @@ export default class Join extends OperationBase {
         if (!config.fields || !(Array.isArray(config.fields)) || config.fields.length < 2) throw new Error('fields configuration must be properly set for a join operator');
         if (config.delimiter && typeof config.delimiter !== 'string') throw new Error('paramter delimiter must be a string if defined');
         if (remove_source) this.removeSource = remove_source;
-        this.target = this.parseField(tField);
+        this.target = tField;
     }
 
     run(doc: DataEntity): DataEntity | null {
         const fieldsData = this.fields.map(field => _.get(doc, field));
         const results = fieldsData.join(this.delimiter);
-
-        if (results.length !== this.delimiter.length) doc[this.target] = results;
+        if (results.length !== this.delimiter.length) _.set(doc, this.target, results);
 
         if (this.removeSource) {
             _.each(this.fields, (field: string) => _.unset(doc, field));

@@ -11,7 +11,8 @@ export default class Ip extends OperationBase {
     }
 
     run(doc: DataEntity): DataEntity | null {
-        if (net.isIP(doc[this.source]) === 0) _.unset(doc, this.source);
+        const field = _.get(doc, this.source);
+        if (net.isIP(field) === 0) _.unset(doc, this.source);
         return doc;
     }
 }

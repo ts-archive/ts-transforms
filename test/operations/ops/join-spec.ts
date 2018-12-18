@@ -82,4 +82,16 @@ describe('join operator', () => {
         expect(DataEntity.getMetadata(results as DataEntity, 'selectors')).toEqual(metaData.selectors);
         expect(results).toEqual({ full: 'JohnDoe' });
     });
+
+    it('can join nested target_field', () => {
+        const opConfig = { operation: 'join', fields: ['person.first', 'person.last'], target_field: 'author.full_name', remove_source: true };
+        const test =  new Join(opConfig);
+        const metaData = { selectors: { 'some:data': true } };
+        const data = new DataEntity({ person: { first: 'John', last: 'Doe' } }, metaData);
+        const results = test.run(data);
+
+        expect(DataEntity.isDataEntity(results)).toEqual(true);
+        expect(DataEntity.getMetadata(results as DataEntity, 'selectors')).toEqual(metaData.selectors);
+        expect(results).toEqual({ author: { full_name: 'JohnDoe' }, person: {} });
+    });
 });

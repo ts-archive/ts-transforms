@@ -55,4 +55,29 @@ describe('boolean validation', () => {
         expect(DataEntity.getMetadata(results6 as DataEntity, 'selectors')).toEqual(metaData.selectors);
         expect(results7).toEqual(data7);
     });
+
+    it('can validate nested fields', async() => {
+        const opConfig = { source_field: 'person.isTall' };
+        const test =  new BooleanOp(opConfig);
+
+        const data1 = new DataEntity({ isTall: true });
+        const data2 = new DataEntity({ isTall: 'true' });
+        const data3 = new DataEntity({ person: {} });
+        const data4 = new DataEntity({ person: { isTall: 'true' } });
+        const data5 = new DataEntity({ person: { isTall: 'sadrasfwe32q' } });
+
+        const results1 = test.run(data1);
+        const results2 = test.run(data2);
+        const results3 = test.run(data3);
+        const results4 = test.run(data4);
+        const results5 = test.run(data5);
+
+        expect(results1).toEqual(data1);
+        expect(results2).toEqual(data2);
+        expect(results3).toEqual(data3);
+        expect(results4).toEqual(data4);
+        expect(results5).toEqual(data3);
+
+        expect(DataEntity.isDataEntity(results1)).toEqual(true);
+    });
 });

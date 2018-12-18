@@ -14,7 +14,7 @@ export default class Email extends OperationBase {
     }
 
     run(doc: DataEntity): DataEntity | null {
-        const field = doc[this.source];
+        const field = _.get(doc, this.source);
         if (typeof field !== 'string' || !field.match(this.regex)) _.unset(doc, this.source);
         return doc;
     }

@@ -2,7 +2,7 @@
 import { UrlDecode } from '../../../src/operations';
 import { DataEntity } from '@terascope/job-components';
 
-describe('base64 operation', () => {
+describe('urldecode operator', () => {
 
     it('can instantiate', () => {
         const opConfig = { target_field: 'final', source_field: 'source' };
@@ -34,7 +34,7 @@ describe('base64 operation', () => {
         expect(() => new UrlDecode(badConfig8)).toThrow();
     });
 
-    it('can base64 decode fields', () => {
+    it('can urldecode decode fields', () => {
         const opConfig = { target_field: 'final', source_field: 'source' };
         const test =  new UrlDecode(opConfig);
         const metaData = { selectors: { 'some:query' : true } };
@@ -80,7 +80,7 @@ describe('base64 operation', () => {
         expect(results11).toEqual({ source: 'hello world', final: 'hello world' });
     });
 
-    it('can base64 decode fields and remove source', () => {
+    it('can urldecode decode fields and remove source', () => {
         const opConfig = { target_field: 'final', source_field: 'source', remove_source: true };
         const test =  new UrlDecode(opConfig);
         const metaData = { selectors: { 'some:query' : true } };
@@ -92,5 +92,19 @@ describe('base64 operation', () => {
 
         expect(DataEntity.getMetadata(results as DataEntity, 'selectors')).toEqual(metaData.selectors);
         expect(results).toEqual({ final: url });
+    });
+
+    it('can urldecode decode nested fields and remove source', () => {
+        const opConfig = { target_field: 'final.data', source_field: 'source.field', remove_source: true };
+        const test =  new UrlDecode(opConfig);
+        const metaData = { selectors: { 'some:query' : true } };
+        const url = 'http:// localhost:9200/logstash-2018.7/_search?q=bytes:>500 AND ip:*&pretty&size=10000';
+        const encodedUrl = 'http:// localhost:9200/logstash-2018.7/_search?q=bytes:%3E500%20AND%20ip:*&pretty&size=10000';
+        const data = new DataEntity({ source: { field: encodedUrl } }, metaData);
+
+        const results = test.run(data);
+
+        expect(DataEntity.getMetadata(results as DataEntity, 'selectors')).toEqual(metaData.selectors);
+        expect(results).toEqual({ final: { data: url }, source: {}  });
     });
 });

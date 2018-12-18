@@ -55,4 +55,29 @@ describe('number validation', () => {
         expect(DataEntity.isDataEntity(results7)).toEqual(true);
         expect(results7).toEqual({});
     });
+
+    it('can validate nested fields', async() => {
+        const opConfig = { source_field: 'file.bytes' };
+        const test =  new NumberOp(opConfig);
+
+        const data1 = new DataEntity({ file: 'something' });
+        const data2 = new DataEntity({ file: {} });
+        const data3 = new DataEntity({ file: { bytes: '123423' } });
+        const data4 = new DataEntity({ file: { bytes: 432423 } });
+        const data5 = new DataEntity({ file: { bytes: 'sadrasfwe32q' } });
+
+        const results1 = test.run(data1);
+        const results2 = test.run(data2);
+        const results3 = test.run(data3);
+        const results4 = test.run(data4);
+        const results5 = test.run(data5);
+
+        expect(results1).toEqual(data1);
+        expect(results2).toEqual(data2);
+        expect(results3).toEqual(data3);
+        expect(results4).toEqual(data4);
+        expect(results5).toEqual(data2);
+
+        expect(DataEntity.isDataEntity(results1)).toEqual(true);
+    });
 });

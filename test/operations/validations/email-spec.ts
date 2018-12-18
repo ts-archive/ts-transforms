@@ -65,4 +65,26 @@ describe('email validation', () => {
         expect(DataEntity.getMetadata(results9 as DataEntity, 'selectors')).toEqual(metaData.selectors);
         expect(results10).toEqual({});
     });
+
+    it('can validate nested fields', async() => {
+        const opConfig = { source_field: 'person.email' };
+        const test =  new Email(opConfig);
+
+        const data1 = new DataEntity({ email: 'ha3ke5@pawnage.com' });
+        const data2 = new DataEntity({ person: {} });
+        const data3 = new DataEntity({ person: { email: 'ha3ke5@pawnage.com' } });
+        const data4 = new DataEntity({ person: { email: 'sadrasfwe32q' } });
+
+        const results1 = test.run(data1);
+        const results2 = test.run(data2);
+        const results3 = test.run(data3);
+        const results4 = test.run(data4);
+
+        expect(results1).toEqual(data1);
+        expect(results2).toEqual(data2);
+        expect(results3).toEqual(data3);
+        expect(results4).toEqual(data2);
+
+        expect(DataEntity.isDataEntity(results1)).toEqual(true);
+    });
 });
