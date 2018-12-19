@@ -13,7 +13,7 @@ import Ip from './lib/validations/ip';
 import Base64Decode from './lib/ops/base64decode';
 import UrlDecode from './lib/ops/urldecode';
 import HexDecode from './lib/ops/hexdecode';
-import RequiredTransforms from './lib/validations/RequiredTransforms';
+import RequiredTransforms from './lib/validations/requiredtransforms';
 
 const opNames = {
     join: Join,
