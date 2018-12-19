@@ -60,7 +60,7 @@ describe('can transform matches', () => {
         expect(results.length).toEqual(1);
         expect(results[0]).toEqual({ point: data[0].location });
     });
-    // TODO: make sure transforms happen on all selector paths
+
     it('it can transform matching data with no selector', async () => {
         const config: WatcherConfig = {
             file_path: getPath('transformRules3.txt'),
@@ -485,8 +485,12 @@ describe('can transform matches', () => {
         const test3 = await opTest.init(config);
         const results3 =  await test3.run(data3);
 
-        expect(results3.length).toEqual(0);
-        expect(results3).toEqual([]);
+        expect(results3.length).toEqual(1);
+        expect(results3[0]).toEqual({
+            value: 'blah',
+            value2: 'moreblah',
+            date
+        });
     });
 
     it('it can transform data if previous transforms had occured with other post_processing', async () => {

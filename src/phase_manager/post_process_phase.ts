@@ -46,7 +46,7 @@ export default class PostProcessPhase implements PhaseBase {
         });
         if (Object.keys(requirements).length > 0) {
             // tslint:disable-next-line
-            const Op = Operations.Keys;
+            const Op = Operations.RequiredTransforms;
             if (!this.postProcessPhase['__all']) this.postProcessPhase['__all'] = [];
             this.postProcessPhase.__all.push(new Op(requirements));
         }
@@ -86,30 +86,30 @@ export default class PostProcessPhase implements PhaseBase {
         if (!this.hasPostProcessing) return dataArray;
         const resultsList: DataEntity[] = [];
 
-        _.each(dataArray, (record) => {
-            const selectors = record.getMetadata('selectors');
-            let results: DataEntity | null = record;
+        _.each(dataArray, (data) => {
+            const selectors = data.getMetadata('selectors');
+            let record: DataEntity | null = data;
 
             _.forOwn(selectors, (_value, key) => {
                 if (this.postProcessPhase[key]) {
-                    results = this.postProcessPhase[key].reduce<DataEntity | null>((record, fn) => {
+                    record = this.postProcessPhase[key].reduce<DataEntity | null>((record, fn) => {
                         if (!record) return record;
                         return fn.run(record);
-                    }, results);
+                    }, record);
                 }
             });
 
             if (this.postProcessPhase.__all) {
-                results = this.postProcessPhase.__all.reduce<DataEntity | null>((record, fn) => {
+                record = this.postProcessPhase.__all.reduce<DataEntity | null>((record, fn) => {
                     if (!record) return record;
                     return fn.run(record);
-                }, results);
+                }, record);
             }
 
-            if (results && Object.keys(results).length > 0) {
-                const secondarySelectors = results.getMetadata('selectors');
-                results.setMetadata('selectors', _.assign(selectors, secondarySelectors));
-                resultsList.push(results);
+            if (record && Object.keys(record).length > 0) {
+                const secondarySelectors = record.getMetadata('selectors');
+                record.setMetadata('selectors', _.assign(selectors, secondarySelectors));
+                resultsList.push(record);
             }
         });
 

@@ -26,10 +26,13 @@ export default class Transform extends OperationBase {
         return null;
     }
 
+    markMetaData() {
+
+    }
+
     run(doc: DataEntity): DataEntity | null {
         const data = _.get(doc, this.source);
         if (data !== undefined) {
-            const metaData = doc.getMetadata();
             let transformedResult;
 
             if (this.config.regex) {
@@ -74,10 +77,9 @@ export default class Transform extends OperationBase {
 
             if (transformedResult !== undefined)  {
                 if (this.isMutation) {
-                    _.set(doc, this.target, transformedResult);
-                    return doc;
+                    return _.set(doc, this.target, transformedResult);
                 }
-                return new DataEntity(_.set({}, this.target, transformedResult), metaData);
+                return new DataEntity(_.set({}, this.target, transformedResult), doc.getMetadata());
             }
         }
         if (this.isMutation) return doc;
