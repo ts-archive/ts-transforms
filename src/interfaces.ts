@@ -64,3 +64,6 @@ export interface JoinConfig {
     delimiter?: string;
     remove_source?: boolean;
 }
+
+export type injectFn = (config: OperationConfig, list: OperationConfig[]) => void;
+export type filterFn = (config: OperationConfig) => boolean;

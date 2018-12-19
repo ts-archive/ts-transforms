@@ -6,6 +6,8 @@ import Loader from '../loader';
 import SelectionPhase from './selector_phase';
 import TransformPhase from './transform_phase';
 import PostProcessPhase from './post_process_phase';
+import ValidationPhase from './validation_phase';
+
 import PhaseBase from './base';
 
 export default class PhaseManager {
@@ -33,7 +35,8 @@ export default class PhaseManager {
             if (!this.isMatcher) {
                 sequence.push(
                     new TransformPhase(this.opConfig, configList),
-                    new PostProcessPhase(this.opConfig, configList)
+                    new PostProcessPhase(this.opConfig, configList),
+                    new ValidationPhase(this.opConfig, configList)
                 );
             }
 

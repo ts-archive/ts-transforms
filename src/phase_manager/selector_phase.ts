@@ -5,11 +5,12 @@ import PhaseBase from './base';
 import * as Ops from '../operations';
 import _ from 'lodash';
 
-export default class SelectionPhase implements PhaseBase {
+export default class SelectionPhase extends PhaseBase {
     private opConfig: WatcherConfig;
     private selectionPhase: Ops.Selector[];
 
     constructor(opConfig: WatcherConfig, configList:OperationConfig[]) {
+        super();
         this.opConfig = opConfig;
         const selectionPhase: Ops.Selector[] = [];
         const dict = {};

@@ -26,10 +26,6 @@ export default class Transform extends OperationBase {
         return null;
     }
 
-    markMetaData() {
-
-    }
-
     run(doc: DataEntity): DataEntity | null {
         const data = _.get(doc, this.source);
         if (data !== undefined) {
