@@ -7,7 +7,6 @@ import _ from 'lodash';
 export default class ExtractionPhase extends PhaseBase {
      // @ts-ignore
     private opConfig: WatcherConfig;
-    readonly hasTransforms: boolean;
 
     constructor(opConfig: WatcherConfig, configList:OperationConfig[]) {
         super();
@@ -33,11 +32,10 @@ export default class ExtractionPhase extends PhaseBase {
         ];
 
         sequence.forEach((loadingConfig) => this.installOps(loadingConfig, configList));
-        this.hasTransforms = Object.keys(this.phase).length > 0;
     }
 
     run(dataArray: DataEntity[]): DataEntity[] {
-        if (!this.hasTransforms) return dataArray;
+        if (!this.hasProcessing) return dataArray;
 
         const resultsList: DataEntity[] = [];
         _.each(dataArray, (record) => {
