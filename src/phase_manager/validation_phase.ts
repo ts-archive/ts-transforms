@@ -9,11 +9,11 @@ export default class ValidationPhase extends PhaseBase {
         super();
 
         function isPrimaryValidation(config: OperationConfig): boolean {
-            return !_.has(config, 'refs') && (_.has(config, 'selector') && _.has(config, 'validation'));
+            return !_.has(config, 'follow') && (_.has(config, 'selector') && _.has(config, 'validation'));
         }
 
         function isRefsValidation(config: OperationConfig): boolean {
-            return _.has(config, 'refs') && _.has(config, 'validation') ;
+            return _.has(config, 'follow') && _.has(config, 'validation') ;
         }
 
         function isMatchRequired(config: OperationConfig): boolean {

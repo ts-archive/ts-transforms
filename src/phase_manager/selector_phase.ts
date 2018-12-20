@@ -15,7 +15,7 @@ export default class SelectionPhase extends PhaseBase {
         const selectionPhase: Ops.Selector[] = [];
         const dict = {};
         _.forEach(configList, (config: OperationConfig) => {
-            if (config.selector && !config.refs && !config.other_match_required) dict[config.selector] = true;
+            if (config.selector && !config.follow && !config.other_match_required) dict[config.selector] = true;
         });
         _.forOwn(dict, (_value, selector) => selectionPhase.push(new Ops.Selector({ selector }, this.opConfig.selector_config)));
         this.selectionPhase = selectionPhase;

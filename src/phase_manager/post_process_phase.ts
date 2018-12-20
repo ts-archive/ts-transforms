@@ -9,11 +9,11 @@ export default class PostProcessPhase extends PhaseBase {
         super();
 
         function isPrimaryPostProcess(config: OperationConfig): boolean {
-            return !_.has(config, 'refs') && (_.has(config, 'selector') && _.has(config, 'post_process'));
+            return !_.has(config, 'follow') && (_.has(config, 'selector') && _.has(config, 'post_process'));
         }
 
         function isRefsPostProcess(config: OperationConfig): boolean {
-            return _.has(config, 'refs') && _.has(config, 'post_process') ;
+            return _.has(config, 'follow') && _.has(config, 'post_process') ;
         }
         const sequence = [
             { type: 'post_process', filterFn: isPrimaryPostProcess },

@@ -19,7 +19,7 @@ export default class ExtractionPhase extends PhaseBase {
         };
 
         function isTransformConfig(config: OperationConfig): boolean {
-            return !_.has(config, 'refs') && (_.has(config, 'source_field') && _.has(config, 'target_field'));
+            return !_.has(config, 'follow') && (_.has(config, 'source_field') && _.has(config, 'target_field'));
         }
 
         function isMatchRequired(config: OperationConfig): boolean {

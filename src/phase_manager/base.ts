@@ -45,13 +45,13 @@ export default abstract class PhaseBase {
         const data = { registrationSelector: config.selector, targetConfig: null };
 
         function findConfiguration(myConfig: OperationConfig, container: ConfigResults): ConfigResults {
-            if (myConfig.refs) {
-                const id = myConfig.refs;
-                const referenceConfig = configList.find(obj => obj.id === id);
-                if (!referenceConfig) throw new Error(`could not find configuration id for refs ${id}`);
+            if (myConfig.follow) {
+                const id = myConfig.follow;
+                const referenceConfig = configList.find(obj => obj.tag === id);
+                if (!referenceConfig) throw new Error(`could not find configuration id for follow ${id}`);
                 if (!container.targetConfig) container.targetConfig = referenceConfig;
                 // recurse
-                if (referenceConfig.refs) {
+                if (referenceConfig.follow) {
                     return findConfiguration(referenceConfig, container);
                 }
                 if (referenceConfig.selector) container.registrationSelector = referenceConfig.selector;
