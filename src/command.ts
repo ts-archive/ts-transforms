@@ -24,7 +24,7 @@ const command = yargs
     .describe('T', 'specify type configs from file')
     .describe('p', 'output the time it took to run the data')
     .demandOption(['r'])
-    .version('0.2.0')
+    .version('0.3.0')
     .argv;
 
 const filePath = command.rules;
@@ -110,12 +110,10 @@ function getPipedData() {
             } catch (err) {
                 // try to see if its line delimited JSON;
                 try {
-                    console.log('im in the catch now', '\n\n\n', typeof strResults, '\n\n\n\n\n', strResults )
                     const data = strResults.split('\n');
                     const dataArray = data.map(jsonStr => JSON.parse(jsonStr));
                     resolve(dataArray);
                 } catch (_secondError) {
-                    console.log('\n\n _secondError \n\n',_secondError)
                     reject(err);
                 }
             }
