@@ -93,14 +93,31 @@ function getPipedData() {
             try {
                 const json = JSON.parse(strResults);
                 if (Array.isArray(json)) resolve(json);
-                const results = _.get(json, 'hits.hits', null);
-                if (results) {
-                    resolve(results.map((doc:ESData) => doc._source));
+                // input from elasticsearch
+                const elasticSearchResults = _.get(json, 'hits.hits', null);
+                if (elasticSearchResults) {
+                    resolve(elasticSearchResults.map((doc:ESData) => doc._source));
                     return;
                 }
+                // input from teraserver
+                const teraserverResults = _.get(json, 'results', null);
+                if (teraserverResults) {
+                    resolve(teraserverResults);
+                    return;
+                }
+
                 throw new Error('could not get parse data');
             } catch (err) {
-                reject(err);
+                // try to see if its line delimited JSON;
+                try {
+                    console.log('im in the catch now', '\n\n\n', typeof strResults, '\n\n\n\n\n', strResults )
+                    const data = strResults.split('\n');
+                    const dataArray = data.map(jsonStr => JSON.parse(jsonStr));
+                    resolve(dataArray);
+                } catch (_secondError) {
+                    console.log('\n\n _secondError \n\n',_secondError)
+                    reject(err);
+                }
             }
         });
     });
