@@ -1,4 +1,5 @@
 
+import _ from 'lodash';
 import OperationBase from './lib/base';
 import Join from './lib/ops/join';
 import Selector from './lib/ops/selector';
@@ -15,22 +16,55 @@ import UrlDecode from './lib/ops/urldecode';
 import HexDecode from './lib/ops/hexdecode';
 import RequiredExtractions from './lib/validations/required_extractions';
 
-const opNames = {
-    join: Join,
-    selector: Selector,
-    extraction: Extraction,
-    geolocation: Geolocation,
-    string: String,
-    boolean: Boolean,
-    number: Number,
-    url: Url,
-    email: Email,
-    ip: Ip,
-    base64decode: Base64Decode,
-    urldecode: UrlDecode,
-    hexdecode: HexDecode,
-    requiredExtractions: RequiredExtractions
-};
+class CorePlugins {
+    init() {
+        return {
+            join: Join,
+            selector: Selector,
+            extraction: Extraction,
+            geolocation: Geolocation,
+            string: String,
+            boolean: Boolean,
+            number: Number,
+            url: Url,
+            email: Email,
+            ip: Ip,
+            base64decode: Base64Decode,
+            urldecode: UrlDecode,
+            hexdecode: HexDecode,
+            requiredExtractions: RequiredExtractions
+        };
+    }
+}
+
+// TODO: Fix me
+interface Operations {
+    [key: string]: Function;
+}
+
+class OperationsManager {
+    operations: Operations;
+    constructor(pluginList: object[] = []) {
+        pluginList.push(CorePlugins);
+        const operations = pluginList.reduce((plugins, PluginClass) => {
+            // @ts-ignore
+            const plugin = new PluginClass();
+            const pluginOps = plugin.init();
+            _.assign(plugins, pluginOps);
+            return plugins;
+        }, {});
+        // @ts-ignore
+        this.operations = operations;
+    }
+
+    getTransform(name: string): OperationBase {
+        const op = this.operations[name];
+        if (!op) throw new Error(`could not find transform module ${name}`);
+        // TODO: fixme
+        // @ts-ignore
+        return op;
+    }
+}
 
 export {
     OperationBase,
@@ -48,5 +82,5 @@ export {
     UrlDecode,
     HexDecode,
     RequiredExtractions,
-    opNames
+    OperationsManager
 };

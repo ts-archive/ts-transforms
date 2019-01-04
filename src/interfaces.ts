@@ -49,11 +49,9 @@ export interface OperationsDictionary {
 
 export interface WatcherConfig {
     type: string;
-    file_path: string | undefined;
-    connection?: string | undefined;
-    index?: string | undefined;
-    selector_config?: object | undefined;
-    actions?: object[];
+    rules: string[];
+    plugins?: string[];
+    types?: object | undefined;
 }
 
 export interface JoinConfig {
