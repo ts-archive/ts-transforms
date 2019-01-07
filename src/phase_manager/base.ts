@@ -1,11 +1,11 @@
 
 import { DataEntity } from '@terascope/job-components';
 import _ from 'lodash';
-import { OperationConfig, NormalizedConfig, OperationsDictionary, ConfigResults, injectFn, filterFn } from '../interfaces';
+import { OperationConfig, NormalizedConfig, OperationsPipline, ConfigResults, injectFn, filterFn } from '../interfaces';
 import { OperationsManager } from '../operations';
 
 export default abstract class PhaseBase {
-    readonly phase: OperationsDictionary;
+    readonly phase: OperationsPipline;
     public hasProcessing: boolean;
 
     constructor() {
@@ -29,10 +29,8 @@ export default abstract class PhaseBase {
                     if (type === 'extraction') opName = 'extraction';
                     if (type === 'validation' || type === 'post_process') opName = config[type];
 
-                    // tslint:disable-next-line
                     const Op = opsManager.getTransform(opName as string);
                     if (!this.phase[configData.registrationSelector]) this.phase[configData.registrationSelector] = [];
-                    // @ts-ignore
                     this.phase[configData.registrationSelector].push(new Op(configData.configuration));
                 }
             }

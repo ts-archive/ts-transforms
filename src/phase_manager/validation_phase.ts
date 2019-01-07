@@ -1,7 +1,8 @@
+
 import { DataEntity } from '@terascope/job-components';
+import _ from 'lodash';
 import { OperationConfig, WatcherConfig } from '../interfaces';
 import PhaseBase from './base';
-import _ from 'lodash';
 import { OperationsManager } from '../operations';
 
 export default class ValidationPhase extends PhaseBase {
@@ -31,7 +32,6 @@ export default class ValidationPhase extends PhaseBase {
             if (Object.keys(requirements).length > 0) {
                 const RequiredExtractions = opsManager.getTransform('requiredExtractions');
                 if (!this.phase['__all']) this.phase['__all'] = [];
-                // @ts-ignore
                 this.phase.__all.push(new RequiredExtractions(requirements));
             }
         });

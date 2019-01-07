@@ -1,15 +1,14 @@
 
 import { PhaseManager } from '../dist';
 import { debugLogger, DataEntity } from '@terascope/job-components';
-import { WatcherConfig } from '../src/interfaces';
+import { WatcherConfig, PluginList } from '../src/interfaces';
 
 const logger = debugLogger('ts-transform');
 
 export default class TestHarness {
-    // @ts-ignore
-    private phaseManager: PhaseManager;
+    private phaseManager!: PhaseManager;
 
-    async init (config: WatcherConfig, plugins?: object) {
+    async init (config: WatcherConfig, plugins?: PluginList) {
         this.phaseManager = new PhaseManager(config, logger);
         await this.phaseManager.init(plugins);
         return this;

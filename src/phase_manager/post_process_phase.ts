@@ -1,8 +1,8 @@
 
 import { DataEntity } from '@terascope/job-components';
+import _ from 'lodash';
 import { OperationConfig, WatcherConfig } from '../interfaces';
 import PhaseBase from './base';
-import _ from 'lodash';
 import { OperationsManager } from '../operations';
 
 export default class PostProcessPhase extends PhaseBase {

@@ -14,7 +14,6 @@ describe('matcher', () => {
     });
 
     it('can return matching documents', async () => {
-        // TODO: file path needs to be from asset
         const config = {
             rules: [matchRules1Path],
             types: { _created: 'date' },

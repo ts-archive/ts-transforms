@@ -1,7 +1,7 @@
 
 import { DataEntity, Logger } from '@terascope/job-components';
 import _ from 'lodash';
-import { WatcherConfig } from '../interfaces';
+import { WatcherConfig, PluginList } from '../interfaces';
 import Loader from '../loader';
 import SelectionPhase from './selector_phase';
 import ExtractionPhase from './extraction_phase';
@@ -25,7 +25,7 @@ export default class PhaseManager {
         this.isMatcher = opConfig.type === 'matcher';
     }
 
-    public async init (Plugins?: object[]) {
+    public async init (Plugins?: PluginList) {
         try {
             const configList = await this.loader.load();
             const opsManager = new OperationsManager(Plugins);

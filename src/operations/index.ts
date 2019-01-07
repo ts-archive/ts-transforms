@@ -5,9 +5,9 @@ import Join from './lib/ops/join';
 import Selector from './lib/ops/selector';
 import Extraction  from './lib/ops/extraction';
 import Geolocation from './lib/validations/geolocation';
-import String from './lib/validations/string';
-import Number from './lib/validations/number';
-import Boolean from './lib/validations/boolean';
+import StringValidation from './lib/validations/string';
+import NumberValidation from './lib/validations/number';
+import BooleanValidation from './lib/validations/boolean';
 import Url from './lib/validations/url';
 import Email from './lib/validations/email';
 import Ip from './lib/validations/ip';
@@ -15,17 +15,18 @@ import Base64Decode from './lib/ops/base64decode';
 import UrlDecode from './lib/ops/urldecode';
 import HexDecode from './lib/ops/hexdecode';
 import RequiredExtractions from './lib/validations/required_extractions';
+import { OperationsDict, PluginClassType, BaseOperationClass, PluginList } from '../interfaces';
 
-class CorePlugins {
-    init() {
+class CorePlugins implements PluginClassType {
+    init(): OperationsDict {
         return {
             join: Join,
             selector: Selector,
             extraction: Extraction,
             geolocation: Geolocation,
-            string: String,
-            boolean: Boolean,
-            number: Number,
+            string: StringValidation,
+            boolean: BooleanValidation,
+            number: NumberValidation,
             url: Url,
             email: Email,
             ip: Ip,
@@ -37,31 +38,25 @@ class CorePlugins {
     }
 }
 
-// TODO: Fix me
-interface Operations {
-    [key: string]: Function;
-}
-
 class OperationsManager {
-    operations: Operations;
-    constructor(pluginList: object[] = []) {
+    operations: OperationsDict;
+
+    constructor(pluginList: PluginList = []) {
         pluginList.push(CorePlugins);
+
         const operations = pluginList.reduce((plugins, PluginClass) => {
-            // @ts-ignore
             const plugin = new PluginClass();
             const pluginOps = plugin.init();
             _.assign(plugins, pluginOps);
             return plugins;
         }, {});
-        // @ts-ignore
+
         this.operations = operations;
     }
 
-    getTransform(name: string): OperationBase {
+    getTransform(name: string): BaseOperationClass {
         const op = this.operations[name];
         if (!op) throw new Error(`could not find transform module ${name}`);
-        // TODO: fixme
-        // @ts-ignore
         return op;
     }
 }
@@ -72,9 +67,9 @@ export {
     Selector,
     Extraction,
     Geolocation,
-    String,
-    Number,
-    Boolean,
+    StringValidation,
+    NumberValidation,
+    BooleanValidation,
     Url,
     Email,
     Ip,
