@@ -58,7 +58,7 @@ describe('boolean validation', () => {
 
     it('can validate special boolean fields', () => {
         const opConfig = { source_field: 'isTall' };
-        const test =  new BooleanOp(opConfig);
+        const test =  new BooleanValidation(opConfig);
         const metaData = { selectors: { 'some:query' : true } };
 
         const data1 = new DataEntity({ isTall: true }, metaData);
