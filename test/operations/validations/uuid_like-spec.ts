@@ -1,11 +1,12 @@
 
-import { Uuid } from '../../../src/operations';
 import { DataEntity } from '@terascope/job-components';
+import { Uuid } from '../../../src/operations';
+import { OperationConfig } from '../../../src/interfaces';
 
 describe('Uuid-like validation', () => {
 
     it('can instantiate', () => {
-        const opConfig = { refs: 'someId', source_field: 'someField' };
+        const opConfig = { follow: 'someId', source_field: 'someField' };
         expect(() => new Uuid(opConfig)).not.toThrow();
     });
 
@@ -25,7 +26,7 @@ describe('Uuid-like validation', () => {
     });
 
     it('can validate Uuid-like fields', () => {
-        const opConfig = { refs: 'someId', source_field: 'field' };
+        const opConfig = { follow: 'someId', source_field: 'field' };
         const test = new Uuid(opConfig);
 
         const metaData = { selectors: { 'some:query' : true } };
@@ -66,5 +67,36 @@ describe('Uuid-like validation', () => {
         expect(results8).toEqual(data8);
         expect(results9).toEqual(data9);
         expect(results10).toEqual(data10);
+    });
+
+    it('can normailize the data', () => {
+        const opConfig = { follow: 'someId', source_field: 'field' };
+        const test = new Uuid(opConfig);
+
+        const opConfig2: OperationConfig = { follow: 'someId', source_field: 'field', case: 'uppercase' };
+        const test2 = new Uuid(opConfig2);
+
+        const data = ['1c7ce488-f4ad-4aae-a6f4-76f9cd5c8635', '1c7ce488-f4ad-4aae-a6f4-76f9cd5c8635'];
+
+        const dataLowerCase = data.map(uuid => new DataEntity({ field: uuid }));
+        const dataUpperCase = data.map(uuid => new DataEntity({ field: uuid.toUpperCase() }));
+
+        const results1 = test.run(dataLowerCase[0]);
+        const results2 = test.run(dataLowerCase[1]);
+        const results3 = test.run(dataUpperCase[0]);
+        const results4 = test.run(dataUpperCase[1]);
+        const results5 = test2.run(dataLowerCase[0]);
+        const results6 = test2.run(dataLowerCase[1]);
+        const results7 = test2.run(dataUpperCase[0]);
+        const results8 = test2.run(dataUpperCase[1]);
+
+        expect(results1).toEqual(dataLowerCase[0]);
+        expect(results2).toEqual(dataLowerCase[1]);
+        expect(results3).toEqual(dataLowerCase[0]);
+        expect(results4).toEqual(dataLowerCase[1]);
+        expect(results5).toEqual(dataUpperCase[0]);
+        expect(results6).toEqual(dataUpperCase[1]);
+        expect(results7).toEqual(dataUpperCase[0]);
+        expect(results8).toEqual(dataUpperCase[1]);
     });
 });

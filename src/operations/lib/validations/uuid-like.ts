@@ -6,9 +6,19 @@ import { OperationConfig } from '../../../interfaces';
 
 export default class UuidLike extends OperationBase {
     private regex: RegExp;
+    private case: 'lowercase' | 'uppercase';
+
     constructor(config: OperationConfig) {
         super(config);
         this.regex = /^[^\s]{8}-[^\s]{4}-[^\s]{4}-[^\s]{4}-[^\s]{12}$/g;
+        this.case = config.case || 'lowercase';
+    }
+
+    normalizeField(value: string): string {
+        let results = value;
+        if (this.case === 'lowercase') results = results.toLowerCase();
+        if (this.case === 'uppercase') results = results.toUpperCase();
+        return results;
     }
 
     run(doc: DataEntity): DataEntity | null {
@@ -17,7 +27,14 @@ export default class UuidLike extends OperationBase {
             _.unset(doc, this.source);
             return doc;
         }
-        if (field.match(this.regex) === null) _.unset(doc, this.source);
+        const data = this.normalizeField(field);
+
+        if (data.match(this.regex) === null) {
+            _.unset(doc, this.source);
+        } else {
+            _.set(doc, this.source, data);
+        }
+
         return doc;
     }
 }

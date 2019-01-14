@@ -1,12 +1,12 @@
 
-import { Mac } from '../../../src/operations';
 import { DataEntity } from '@terascope/job-components';
+import { MacAddress } from '../../../src/operations';
 
-describe('mac validation', () => {
+describe('MacAddress validation', () => {
 
     it('can instantiate', () => {
-        const opConfig = { refs: 'someId', source_field: 'someField' };
-        expect(() => new Mac(opConfig)).not.toThrow();
+        const opConfig = { follow: 'someId', source_field: 'someField' };
+        expect(() => new MacAddress(opConfig)).not.toThrow();
     });
 
     it('can properly throw with bad config values', () => {
@@ -15,21 +15,21 @@ describe('mac validation', () => {
         const badConfig3 = { source_field: {} };
         const badConfig4 = {};
         // @ts-ignore
-        expect(() => new Mac(badConfig1)).toThrow();
+        expect(() => new MacAddress(badConfig1)).toThrow();
         // @ts-ignore
-        expect(() => new Mac(badConfig2)).toThrow();
+        expect(() => new MacAddress(badConfig2)).toThrow();
         // @ts-ignore
-        expect(() => new Mac(badConfig3)).toThrow();
+        expect(() => new MacAddress(badConfig3)).toThrow();
         // @ts-ignore
-        expect(() => new Mac(badConfig4)).toThrow();
+        expect(() => new MacAddress(badConfig4)).toThrow();
     });
 
-    it('can validate mac fields', () => {
-        const opConfig = { refs: 'someId', source_field: 'field' };
-        const test = new Mac(opConfig);
+    it('can validate MacAddress fields', () => {
+        const opConfig = { follow: 'someId', source_field: 'field' };
+        const test = new MacAddress(opConfig);
 
-        const opConfig2 = { refs: 'someId', source_field: 'field', preserve_colons: true };
-        const test2 = new Mac(opConfig2);
+        const opConfig2 = { follow: 'someId', source_field: 'field', preserve_colons: true };
+        const test2 = new MacAddress(opConfig2);
 
         const metaData = { selectors: { 'some:query' : true } };
 
@@ -66,40 +66,5 @@ describe('mac validation', () => {
         expect(results7).toEqual({});
         expect(results8).toEqual(data8);
         expect(results9).toEqual(data9);
-    });
-
-    it('can ensure mac are of certain lengths', () => {
-        const opConfig = { refs: 'someId', source_field: 'field', length: 12 };
-        const test =  new Mac(opConfig);
-        const metaData = { selectors: { 'some:query' : true } };
-
-        const data1 = new DataEntity({ field: 'something' }, metaData);
-        const data2 = new DataEntity({ field: '17:63:80:d9:4c:vb' }, metaData);
-
-        const results1 = test.run(data1);
-        const results2 = test.run(data2);
-
-        expect(DataEntity.isDataEntity(results1)).toEqual(true);
-        expect(DataEntity.getMetadata(results1 as DataEntity, 'selectors')).toEqual(metaData.selectors);
-        expect(results1).toEqual({});
-        expect(DataEntity.getMetadata(results2 as DataEntity, 'selectors')).toEqual(metaData.selectors);
-        expect(results2).toEqual(data2);
-    });
-
-    it('can validate and make sure that the string is within a range', async() => {
-        const opConfig = { refs: 'someId', source_field: 'field', min: 15 };
-        const opConfig2 = { refs: 'someId', source_field: 'field', mx: 13 };
-
-        const test =  new Mac(opConfig);
-        const test2 =  new Mac(opConfig2);
-
-        const data1 = new DataEntity({ field: '17:63:80:d9:4c:vb' });
-        const data2 = new DataEntity({ field: '17:63:80:d9:4c:vb' });
-
-        const results1 = test.run(data1);
-        const results2 = test2.run(data2);
-
-        expect(results1).toEqual({});
-        expect(results2).toEqual({});
     });
 });
