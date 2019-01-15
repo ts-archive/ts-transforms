@@ -16,7 +16,7 @@ import Email from './lib/validations/email';
 import Ip from './lib/validations/ip';
 import MacAddress from './lib/validations/mac_address';
 import Uuid from './lib/validations/uuid';
-
+import PhoneNumber from './lib/validations/phone_number';
 import RequiredExtractions from './lib/validations/required_extractions';
 import { OperationsDict, PluginClassType, BaseOperationClass, PluginList } from '../interfaces';
 
@@ -37,7 +37,8 @@ class CorePlugins implements PluginClassType {
             urldecode: UrlDecode,
             hexdecode: HexDecode,
             requiredExtractions: RequiredExtractions,
-            mac_address: MacAddress,
+            macaddress: MacAddress,
+            phonenumber: PhoneNumber,
             uuid: Uuid,
         };
     }
@@ -85,4 +86,5 @@ export {
     OperationsManager,
     MacAddress,
     Uuid,
+    PhoneNumber
 };
